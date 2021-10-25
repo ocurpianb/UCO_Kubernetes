@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: 2alpine-deployment
+  labels:
+    app: alpine
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alpine
+  template:
+    metadata:
+      labels:
+        app: alpine
+    spec:
+      containers:
+      - name: alpine1
+        image: alpine
+        command: ['sh', '-c', 'echo En Marcha alpine 1; sleep 1000']
+        volumeMounts:
+          - name: alpine-shared
+            mountPath: /shared1
+      - name: alpine2
+        image: alpine
+        command: ['sh', '-c', 'echo En Marcha alpine 2; sleep 1000']
+        volumeMounts:
+          - name: alpine-shared
+            mountPath: /shared2
+      volumes:
+        - name: alpine-shared
+          # Creacion de un disco persistente a nivel de NODO (de servidor). 
+          # Si el nuevo POD cambia de nodo no habra datos
+          hostPath:
+            path: /shared
+            type: DirectoryOrCreate  

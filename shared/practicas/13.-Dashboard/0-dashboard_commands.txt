@@ -1,0 +1,30 @@
+Instalar el dashboard de kubernetes:
+
+#	kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml
+	
+	Instalar el dashboard modificado para la version de vagrant
+
+	kubectl apply -f /home/vagrant/projects/practicas/13.-Dashboard/dashboard.yaml
+
+Crear un usuario de ejemplo
+
+	kubectl apply -f service-account.yaml
+	kubectl apply -f cluster-role-binding.yaml 
+
+Obtener el token de acceso para el usuario de ejemplo
+
+	kubectl -n kubernetes-dashboard describe secret $(kubectl -n kubernetes-dashboard get secret | grep admin-user | awk '{print $1}')
+
+Arrancar el proxy (solo cuando se accede al dashboard desde localhost. En este dashboard se ha creado un nodeport al puerto 32000)
+
+#	kubectl proxy (para arrancar el proxy en localhost y que solo se accesible desde la maquina proxy --> master)
+
+#	kubectl proxy --address='0.0.0.0' --accept-hosts='^*$'   (para que el proxy se accesible desde fuera de vagrant)
+
+Acceder mediante navegador a la siguiente url:
+
+	http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
+
+	En el despligue dentro de la Vagrant, se accede desde fuera de las maquinas a traves el nodeport (sin necesidad de arrancar el proxy)
+	
+	https://10.0.1.2:32000

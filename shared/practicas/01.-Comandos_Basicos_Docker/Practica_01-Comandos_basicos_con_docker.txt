@@ -1,0 +1,17 @@
+Ejecutar como root:
+
+#Instalacion Docker
+	sudo apt-get update
+	sudo apt-get upgrade
+	sudo apt-get install docker docker-compose
+
+# Cambiar la configuracion del socket
+	sudo vim /lib/systemd/system/docker.service
+		modificar: 
+			ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
+		por: 
+			ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock --exec-opt native.cgroupdriver=systemd
+
+	sudo systemctl daemon-reload
+	sudo systemctl restart docker
+

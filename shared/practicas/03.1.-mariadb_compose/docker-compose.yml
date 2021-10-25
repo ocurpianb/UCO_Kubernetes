@@ -1,0 +1,16 @@
+version: '2'
+services:
+  mariadb:    
+    image: mariadb:latest
+    container_name: mariadb
+    hostname: mariadbhost
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: PRUEBA
+      MYSQL_USER: usuario
+      MYSQL_PASSWORD: password
+    restart: on-failure
+    ports: 
+      - "3306:3306"
+    volumes:
+      - /home/vagrant/projects/practicas/03.1.-mariadb_compose/mariadb:/var/lib/mysql

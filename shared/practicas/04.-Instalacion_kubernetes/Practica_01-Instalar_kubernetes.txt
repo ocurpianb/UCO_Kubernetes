@@ -1,0 +1,91 @@
+-------------------
+Ejecutar como root:
+-------------------
+
+# Importar repositorio kubernetes
+
+	sudo apt-get install curl
+	sudo su -
+	curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+
+	touch /etc/apt/sources.list.d/kubernetes.list
+	echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
+	apt-get update
+
+# Cambiar el nombre de la maquina como master (o nodo)
+
+	hostnamectl set-hostname master
+
+# Añadir el hostname al /etc/hostsip a (obtener la IP de la interfaz de red)
+
+	vim /etc/hosts 
+		(añadir  10.0.0.X master)
+		(comentar entrada master localhost)
+		10.0.1.2 master
+		10.0.1.3 worker1
+		10.0.1.4 worker2
+
+# Eliminar la swap (docker no funciona correctamente con swap)
+
+	swapoff -a
+	vim /etc/fstab
+	free
+
+# Instalar kubernetets (kubeadm; kubelet; kubectl)
+
+	apt-get install kubeadm -y
+	kubeadm version
+
+# Inicializar kubernetes (primera vez) aplicando un rango al CIDR
+
+#	sudo kubeadm init --pod-network-cidr=172.168.10.0/24    -> cogiendo la red por defecto de la maquina
+	sudo kubeadm init --apiserver-advertise-address 10.0.1.2 --pod-network-cidr=172.168.10.0/24
+
+
+-------------------------
+Ejecutar como kubernetes:
+-------------------------
+
+# Ejecutar los pasos indicados tras inicializar el control-plane
+	
+	mkdir -p $HOME/.kube
+	sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+	sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+# Instalar flannel (configurador de reglas de networking de capa 3, necesario para hacer funcionar al servicio dns CoreDNS)
+
+
+	- Antes de instalar flannel, es necesario parchear los miembros de cluster especificando el cidr
+
+	kubectl patch node master -p '{"spec":{"podCIDR":"172.168.10.0/24"}}'
+	kubectl patch node worker1 -p '{"spec":{"podCIDR":"172.168.10.0/24"}}'
+	kubectl patch node worker2 -p '{"spec":{"podCIDR":"172.168.10.0/24"}}'
+
+	Utilizamos un yaml modificado para funcionar bajo Vagrant
+
+	kubectl apply -f /home/vagrant/projects/practicas/04.-Instalacion_kubernetes/kube-flannel.yml 
+
+
+	( La version de instalacion directa desde Internet seria: sudo kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml --kubeconfig $HOME/.kube/config)
+
+
+---------------------------------------------------------------------------
+
+(a ejecutar en maquinas “workers” para integrarlas al cluster de kubernetes)
+
+kubeadm join x.x.x.x:6443 --token yyyyyy.zzzzzzzzzzzzzz \
+--discovery-token-ca-cert-hash sha256:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+(Ejecutar la instrucción kubeadm join en todos los miembros del clúster. Lo ideal es crearlo como un script y moverlo 
+a todas las maquinas)
+
+El token tiene una vida util de 24 horas. Para regenerar un token nuevo seguir los pasos:
+https://monowar-mukul.medium.com/kubernetes-create-a-new-token-and-join-command-to-rejoin-add-worker-node-74bbe8774808
+
+
+---------------------------------------------------------------------------
+
+
+# Permitir que el nodo master tambien ejecute pods
+
+	kubectl taint nodes --all node-role.kubernetes.io/master-

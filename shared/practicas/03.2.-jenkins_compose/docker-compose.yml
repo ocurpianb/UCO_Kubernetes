@@ -1,0 +1,12 @@
+version: '2'
+services:
+  jenkins:
+    image: jenkins/jenkins:lts 
+    container_name: myjenkins
+    hostname: jenkinshost
+    restart: on-failure
+    ports: 
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - /home/vagrant/projects/practicas/03.2.-jenkins_compose/jenkins:/var/jenkins_home

@@ -1,0 +1,31 @@
+version: '2'
+services:
+  jenkins:
+    image: jenkins/jenkins:lts 
+    container_name: myjenkins
+    hostname: jenkinshost
+    restart: on-failure
+    ports: 
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - /home/vagrant/projects/practicas/03.2.-jenkins_compose/jenkins:/var/jenkins_home
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadb
+    hostname: mariadbhost
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: PRUEBA
+      MYSQL_USER: usuario
+      MYSQL_PASSWORD: password
+    restart: on-failure
+    ports: 
+      - "3306:3306"
+    volumes:
+      - /home/vagrant/projects/practicas/03.1.-mariadb_compose/mariadb:/var/lib/mysql
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8000:8080
