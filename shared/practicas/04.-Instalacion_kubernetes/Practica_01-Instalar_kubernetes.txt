@@ -16,10 +16,10 @@ Ejecutar como root:
 
 	hostnamectl set-hostname master
 
-# AÒadir el hostname al /etc/hostsip a (obtener la IP de la interfaz de red)
+# A√±adir el hostname al /etc/hostsip a (obtener la IP de la interfaz de red)
 
 	vim /etc/hosts 
-		(aÒadir  10.0.0.X master)
+		(a√±adir  10.0.0.X master)
 		(comentar entrada master localhost)
 		10.0.1.2 master
 		10.0.1.3 worker1
@@ -52,6 +52,14 @@ Ejecutar como kubernetes:
 	sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 	sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
+
+NOTA: YA no se instala flannel, se utiliza calico
+
+	kubectl apply -f /home/vagrant/projects/practicas/04.-Instalacion_kubernetes/calico.yaml
+	
+	
+NOTA: SALTAR A KubeJoin
+
 # Instalar flannel (configurador de reglas de networking de capa 3, necesario para hacer funcionar al servicio dns CoreDNS)
 
 
@@ -71,12 +79,12 @@ Ejecutar como kubernetes:
 
 ---------------------------------------------------------------------------
 
-(a ejecutar en maquinas ìworkersî para integrarlas al cluster de kubernetes)
+(a ejecutar en maquinas ‚Äúworkers‚Äù para integrarlas al cluster de kubernetes)
 
 kubeadm join x.x.x.x:6443 --token yyyyyy.zzzzzzzzzzzzzz \
 --discovery-token-ca-cert-hash sha256:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-(Ejecutar la instrucciÛn kubeadm join en todos los miembros del cl˙ster. Lo ideal es crearlo como un script y moverlo 
+(Ejecutar la instrucci√≥n kubeadm join en todos los miembros del cl√∫ster. Lo ideal es crearlo como un script y moverlo 
 a todas las maquinas)
 
 El token tiene una vida util de 24 horas. Para regenerar un token nuevo seguir los pasos:
