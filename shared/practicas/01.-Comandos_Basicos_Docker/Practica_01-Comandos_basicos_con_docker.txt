@@ -12,9 +12,9 @@ Ejecutar como root:
 		por: 
 			ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock --exec-opt native.cgroupdriver=systemd
 
-# Definir, de otro modo el driver de cgroups a utilizar
+# Otra forma de definir, de otro modo el driver de cgroups a utilizar (Utilizar la anterior o esta)
 
-		sudo vim /etc/docker/daemon.json'
+		sudo vim /etc/docker/daemon.json
 	
 	Añadirle el siguiente contenido
 
