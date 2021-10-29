@@ -12,6 +12,18 @@ Ejecutar como root:
 		por: 
 			ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock --exec-opt native.cgroupdriver=systemd
 
-	sudo systemctl daemon-reload
-	sudo systemctl restart docker
+# Definir, de otro modo el driver de cgroups a utilizar
+
+		sudo vim /etc/docker/daemon.json'
+	
+	Añadirle el siguiente contenido
+
+		{
+		"exec-opts": ["native.cgroupdriver=systemd"]
+		}
+
+# Reinicio de servicios
+
+sudo systemctl daemon-reload
+sudo systemctl restart docker
 
